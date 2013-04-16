@@ -505,7 +505,7 @@ error_logger_redirect_crash_test_() ->
                         ?assertEqual(Pid,proplists:get_value(pid,Metadata)),
                         ?assertEqual(lager_util:level_to_num(error),Level)
                 end
-            } 
+            }
     end,
     {foreach,
         fun() ->
@@ -605,12 +605,12 @@ error_logger_redirect_test_() ->
                         ?assertEqual(Expected, lists:flatten(Msg))
                 end
             },
-            {"error messages are truncated at 4096 characters",
+            {"error messages are truncated at 16384 characters",
                 fun() ->
                         sync_error_logger:error_msg("doom, doom has come upon you all ~p", [string:copies("doom", 10000)]),
                         _ = gen_event:which_handlers(error_logger),
                         {_, _, Msg,_Metadata} = pop(),
-                        ?assert(length(lists:flatten(Msg)) < 5100)
+                        ?assert(length(lists:flatten(Msg)) < 17000)
                 end
             },
             {"info reports are printed",
@@ -631,7 +631,7 @@ error_logger_redirect_test_() ->
                         {Level, _, Msg,Metadata} = pop(),
                         ?assertEqual(lager_util:level_to_num(info),Level),
                         ?assertEqual(self(),proplists:get_value(pid,Metadata)),
-                        ?assert(length(lists:flatten(Msg)) < 5000)
+                        ?assert(length(lists:flatten(Msg)) < 17000)
                 end
             },
             {"single term info reports are printed",
@@ -671,7 +671,7 @@ error_logger_redirect_test_() ->
                         {Level, _, Msg,Metadata} = pop(),
                         ?assertEqual(lager_util:level_to_num(info),Level),
                         ?assertEqual(self(),proplists:get_value(pid,Metadata)),
-                        ?assert(length(lists:flatten(Msg)) < 5100)
+                        ?assert(length(lists:flatten(Msg)) < 17000)
                 end
             },
             {"strings in a mixed report are printed as strings",
@@ -701,7 +701,7 @@ error_logger_redirect_test_() ->
                         {Level, _, Msg,Metadata} = pop(),
                         ?assertEqual(lager_util:level_to_num(info),Level),
                         ?assertEqual(self(),proplists:get_value(pid,Metadata)),
-                        ?assert(length(lists:flatten(Msg)) < 5100)
+                        ?assert(length(lists:flatten(Msg)) < 17000)
                 end
             },
 
@@ -893,14 +893,14 @@ error_logger_redirect_test_() ->
             },
             {"crash report for unknown system limit should be truncated at 500 characters",
                 fun() ->
-                        sync_error_logger:error_report(crash_report, [[{pid, self()}, {error_info, {error, system_limit, [{wtf,boom,[string:copies("aaaa", 4096)]}]}}], []]),
+                        sync_error_logger:error_report(crash_report, [[{pid, self()}, {error_info, {error, system_limit, [{wtf,boom,[string:copies("aaaa", 17000)]}]}}], []]),
                         _ = gen_event:which_handlers(error_logger),
                         {_, _, Msg,_Metadata} = pop(),
                         ?assert(length(lists:flatten(Msg)) > 550),
                         ?assert(length(lists:flatten(Msg)) < 600)
                 end
             },
-            {"crash reports for 'special processes' should be handled right - function_clause", 
+            {"crash reports for 'special processes' should be handled right - function_clause",
                 fun() ->
                         {ok, Pid} = special_process:start(),
                         unlink(Pid),
@@ -913,7 +913,7 @@ error_logger_redirect_test_() ->
                         test_body(Expected, lists:flatten(Msg))
                 end
             },
-            {"crash reports for 'special processes' should be handled right - case_clause", 
+            {"crash reports for 'special processes' should be handled right - case_clause",
                 fun() ->
                         {ok, Pid} = special_process:start(),
                         unlink(Pid),
@@ -926,7 +926,7 @@ error_logger_redirect_test_() ->
                         test_body(Expected, lists:flatten(Msg))
                 end
             },
-            {"crash reports for 'special processes' should be handled right - exit", 
+            {"crash reports for 'special processes' should be handled right - exit",
                 fun() ->
                         {ok, Pid} = special_process:start(),
                         unlink(Pid),
@@ -939,7 +939,7 @@ error_logger_redirect_test_() ->
                         test_body(Expected, lists:flatten(Msg))
                 end
             },
-            {"crash reports for 'special processes' should be handled right - error", 
+            {"crash reports for 'special processes' should be handled right - error",
                 fun() ->
                         {ok, Pid} = special_process:start(),
                         unlink(Pid),

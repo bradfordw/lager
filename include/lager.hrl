@@ -15,7 +15,7 @@
 %% under the License.
 
 
--define(DEFAULT_TRUNCATION, 4096).
+-define(DEFAULT_TRUNCATION, 16384).
 
 -define(LEVELS,
     [debug, info, notice, warning, error, critical, alert, emergency, none]).
@@ -62,7 +62,7 @@
             Level,
             [{pid,Pid},{line,?LINE},{file,?FILE},{module,?MODULE}],
             [])}
-        )). 
+        )).
 
 %% FOR INTERNAL USE ONLY
 %% internal non-blocking logging call
